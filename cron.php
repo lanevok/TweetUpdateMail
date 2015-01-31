@@ -14,13 +14,18 @@ function getHeadText($response){
 function getMain($response){
 	$text = "";
 	for($i=0;$i<10;$i++){
-		$text .= $response[$i]->text."\n-----\n";
+		$text .= date('Y-m-d H:i:s', strtotime((string)$response[$i]->created_at))."\n\n";
+		$text .= $response[$i]->text."\n\n----------\n";
 	}
 	return $text;
 }
 
 function readLast(){
 	return file_get_contents("last.txt");
+}
+
+function readPower(){
+	return file_get_contents("power.txt");
 }
 
 function writeLast($text){
@@ -41,6 +46,10 @@ function getDiff($src, $dst){
 	return strcmp($src, $dst);
 }
 
+if(readPower()!=1){
+	print_r("停止中");
+	exit(0);
+}
 $api = new Twitter();
 $response = $api->userTL("lanevok");
 if(getDiff(getTopID($response),readLast())>0){
