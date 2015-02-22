@@ -4,6 +4,16 @@ require_once 'config.php';
 require_once 'Twitter.php';
 
 function getTopID($response){
+	for($i=0;$i<15;$i++){
+		if(strpos($response[$i]->text,"@lanevok")===0&&
+			strstr($response[$i]->text,"のポスト数：")&&
+			strstr($response[$i]->text,"うちRT")){
+			continue;
+		}
+		else{
+			return $response[$i]->id_str;
+		}
+	}
 	return $response[0]->id_str;
 }
 
@@ -13,7 +23,7 @@ function getHeadText($response){
 
 function getMain($response){
 	$text = "";
-	for($i=0;$i<10;$i++){
+	for($i=0;$i<15;$i++){
 		$text .= date('Y-m-d H:i:s', strtotime((string)$response[$i]->created_at))."\n\n";
 		$text .= $response[$i]->text."\n\n----------\n";
 	}
@@ -36,7 +46,7 @@ function doMail($head,$text){
 	mb_language("Ja") ;
 	mb_internal_encoding("UTF-8") ;
 	$mailto="sample@lanevok.com";
-	$subject=$head;
+	$subject=mb_strimwidth($head, 0, 36, '…');
 	$content=$text;
 	$mailfrom="From:" .mb_encode_mimeheader("Twitter Update Mail") ."<sample@lanevok.com>";
 	mb_send_mail($mailto,$subject,$content,$mailfrom);
